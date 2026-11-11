@@ -2,7 +2,9 @@ import { EmbedSource, EnableEmbedKey } from "./";
 import { Setting } from "obsidian";
 import { PluginSettings } from "../settings";
 
-const CODEPEN_LINK = new RegExp(/https:\/\/codepen\.io\/(\w+)\/(?:pen)\/(\w+)/);
+const CODEPEN_LINK = new RegExp(
+  /https?:\/\/codepen\.io\/([a-zA-Z0-9_.-]+)\/(?:pen|embed|details)\/([a-zA-Z0-9_.-]+)/,
+);
 
 declare global {
   interface Window {
@@ -22,8 +24,11 @@ export class CodepenEmbed implements EmbedSource {
   ) {
     this._ensureCodepenLoaded();
 
-    const user = link.match(CODEPEN_LINK)[1];
-    const slug = link.match(CODEPEN_LINK)[2];
+    const match = link.match(CODEPEN_LINK);
+    if (!match) return container;
+
+    const user = match[1];
+    const slug = match[2];
 
     const defaultTabs = [
       settings.codepenDefaultTab,

@@ -12,7 +12,9 @@ export class VimeoEmbed implements EmbedSource {
     wrapper.classList.add("video-wrapper");
     const iframe = document.createElement("iframe");
 
-    const id = link.match(VIMEO_LINK).groups.id;
+    const match = link.match(VIMEO_LINK);
+    const id = match?.groups?.id;
+    if (!id) return container;
 
     iframe.src = `https://player.vimeo.com/video/${id}`;
     iframe.setAttribute("frameborder", "0");

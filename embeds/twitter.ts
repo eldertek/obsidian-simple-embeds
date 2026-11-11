@@ -2,7 +2,9 @@ import { EmbedSource, EnableEmbedKey } from "./";
 import { Setting } from "obsidian";
 import { PluginSettings } from "../settings";
 
-const TWEET_LINK = new RegExp(/https:\/\/(?:mobile\.)?twitter\.com\/.+\/(\d+)/);
+const TWEET_LINK = new RegExp(
+  /https?:\/\/(?:mobile\.)?(?:twitter|x)\.com\/.+?(?:\/status|\/statuses)\/(\d+)/,
+);
 
 interface EmbedOptions {
   theme: "dark" | "light";
@@ -37,7 +39,9 @@ export class TwitterEmbed implements EmbedSource {
     currentTheme: "light" | "dark",
   ) {
     this._ensureTwitterLoaded();
-    const tweetId = link.match(TWEET_LINK)[1];
+    const match = link.match(TWEET_LINK);
+    if (!match) return container;
+    const tweetId = match[1];
     container.id = `TweetContainer${tweetId}`;
     const theme =
       settings.twitterTheme == "auto" ? currentTheme : settings.twitterTheme;

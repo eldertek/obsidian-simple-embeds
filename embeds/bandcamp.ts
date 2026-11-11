@@ -13,16 +13,20 @@ export class BandcampEmbed implements EmbedSource {
 
   createEmbed(link: string, container: HTMLElement) {
     const iframe = document.createElement("iframe");
-    const type = link.match(BANDCAMP_LINK).groups.type;
+    const match = link.match(BANDCAMP_LINK);
+    if (!match?.groups?.type) return container;
+    const type = match.groups.type;
     const isAlbum = type === "album";
 
     requestUrl({ url: link }).then(({ text }) => {
-      const id = text.match(ID).groups?.id;
+      const id = text.match(ID)?.groups?.id;
       if (id) {
         iframe.src = `https://bandcamp.com/EmbeddedPlayer/${type}=${id}/tracklist=${isAlbum}/artwork=small/${
           isAlbum ? "size=large/" : ""
         }`;
       }
+    }).catch((err) => {
+      console.warn("Failed to fetch Bandcamp page:", err);
     });
 
     iframe.setAttribute("frameborder", "0");
